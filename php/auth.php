@@ -1,27 +1,35 @@
 <?php
-declare(strict_types=1);
-
-require_once __DIR__ . '/config.php';
-
-function current_user(): ?array
-{
-    return $_SESSION['usuario'] ?? null;
+// /php/auth.php - Control de sesión activa y permisos por rol (RF08, RNF02)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-function require_login(): array
-{
-    $usuario = current_user();
-    if (!$usuario) {
-        json_response(['error' => 'Debes iniciar sesion'], 401);
-    }
-    return $usuario;
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: index.html?error=sesion");
+    exit;
 }
 
-function require_role(array $roles): array
-{
-    $usuario = require_login();
-    if (!in_array($usuario['rol'], $roles, true)) {
-        json_response(['error' => 'No tienes permisos para esta accion'], 403);
-    }
-    return $usuario;
+$usuario_nombre = $_SESSION['nombre'] ?? 'Usuario';
+$usuario_rol = $_SESSION['rol'] ?? 'administrador';
+$id_usuario_activo = intval($_SESSION['id_usuario']);
+
+function etiquetaRol($rol) {
+    $map = [
+        'administrador' => 'Administrador',
+        'recepcionista' => 'Recepcionista',
+        'mesero'        => 'Mesero',
+        'cocinero'      => 'Cocinero'
+    ];
+    return $map[$rol] ?? 'Administrador';
 }
+
+function puedeVerModulo($rol, $modulo) {
+    if ($rol === 'administrador') return true;
+    $permisos = [
+        'recepcionista' => ['dashboard', 'mesas', 'inventario'],
+        'mesero'        => ['dashboard', 'mesas', 'pedidos', 'caja'],
+        'cocinero'      => ['dashboard', 'cocina']
+    ];
+    return in_array($modulo, $permisos[$rol] ?? []);
+}
+?>

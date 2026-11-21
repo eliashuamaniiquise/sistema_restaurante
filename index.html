@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SistemDR - Restaurante Don Dunay | Iniciar Sesión</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="login-page">
+  <header class="login-brand-header">SistemDR - Restaurante Don Dunay</header>
+
+  <main class="login-center-wrap">
+    <div class="login-card">
+      <div class="login-avatar-circle">&#128100;</div>
+
+      <div id="loginAlert" style="display:none;background:#FEE2E2;color:#991B1B;padding:8px 12px;border-radius:6px;font-size:12.5px;margin-bottom:12px;text-align:center;"></div>
+
+      <!-- Formulario de Inicio de Sesión -->
+      <form id="formLogin" action="php/login.php" method="POST">
+        <input type="hidden" name="accion" value="login">
+
+        <div class="login-field">
+          <input type="text" name="usuario" class="login-input" placeholder="Usuario" required autocomplete="username">
+        </div>
+
+        <div class="login-field">
+          <input type="password" id="loginPassword" name="clave" class="login-input" placeholder="Contraseña" required autocomplete="current-password">
+          <button type="button" class="toggle-pass-btn" onclick="togglePass()" title="Mostrar/Ocultar contraseña">&#128065;</button>
+        </div>
+
+        <div class="login-field">
+          <select name="rol" class="login-select" required>
+            <option value="administrador">Rol: Administrador</option>
+            <option value="recepcionista">Rol: Recepcionista</option>
+            <option value="mesero">Rol: Mesero</option>
+            <option value="cocinero">Rol: Cocinero</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-login-submit">Iniciar sesión</button>
+
+        <div class="login-footer-link">
+          ¿No estás registrado? <a onclick="mostrarRegistro(true)">Crea tu cuenta</a>
+        </div>
+      </form>
+
+      <!-- Formulario rápido de Registro de Cuenta -->
+      <form id="formRegistro" action="php/login.php" method="POST" style="display:none;">
+        <input type="hidden" name="accion" value="registro">
+
+        <div class="login-field">
+          <input type="text" name="nombre" class="login-input" placeholder="Nombre completo" required>
+        </div>
+        <div class="login-field">
+          <input type="text" name="usuario" class="login-input" placeholder="Nuevo usuario" required>
+        </div>
+        <div class="login-field">
+          <input type="password" name="clave" class="login-input" placeholder="Contraseña" required>
+        </div>
+        <div class="login-field">
+          <select name="rol" class="login-select">
+            <option value="mesero">Rol: Mesero</option>
+            <option value="cocinero">Rol: Cocinero</option>
+            <option value="recepcionista">Rol: Recepcionista</option>
+            <option value="administrador">Rol: Administrador</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-login-submit">Registrar cuenta</button>
+
+        <div class="login-footer-link">
+          ¿Ya tienes cuenta? <a onclick="mostrarRegistro(false)">Volver al login</a>
+        </div>
+      </form>
+
+      <div class="login-demo-hint">
+        <strong>Acceso rápido XAMPP:</strong><br>
+        Usuarios: <code>admin</code> | <code>mesero</code> | <code>cocinero</code> | <code>recepcion</code> &nbsp;•&nbsp; Clave: <code>1234</code>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function togglePass() {
+      const inp = document.getElementById('loginPassword');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+    function mostrarRegistro(ver) {
+      document.getElementById('formLogin').style.display = ver ? 'none' : 'block';
+      document.getElementById('formRegistro').style.display = ver ? 'block' : 'none';
+    }
+    const params = new URLSearchParams(window.location.search);
+    const alertBox = document.getElementById('loginAlert');
+    if (params.get('error') === 'credenciales') {
+      alertBox.style.display = 'block';
+      alertBox.textContent = 'Usuario, contraseña o rol incorrectos.';
+    } else if (params.get('error') === 'bd') {
+      alertBox.style.display = 'block';
+      alertBox.textContent = 'Error de conexión con MySQL. Importe database.sql en phpMyAdmin.';
+    } else if (params.get('error') === 'sesion') {
+      alertBox.style.display = 'block';
+      alertBox.textContent = 'Inicie sesión para acceder al sistema.';
+    } else if (params.get('ok') === 'registrado') {
+      alertBox.style.display = 'block';
+      alertBox.style.background = '#E2FAEC';
+      alertBox.style.color = '#166534';
+      alertBox.textContent = 'Cuenta registrada. Ahora puede iniciar sesión.';
+    }
+  </script>
+</body>
+</html>
